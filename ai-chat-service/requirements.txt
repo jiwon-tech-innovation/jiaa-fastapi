@@ -1,0 +1,9 @@
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+boto3>=1.29.0
+sqlalchemy>=2.0.23
+pydantic>=2.5.0
+websockets>=12.0
+psycopg2-binary>=2.9.9
+numpy>=1.24.0
+

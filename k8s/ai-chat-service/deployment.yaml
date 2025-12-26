@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jiaa-ai-chat-service
+  labels:
+    app: jiaa-ai-chat-service
+    service: ai-chat-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jiaa-ai-chat-service
+  template:
+    metadata:
+      labels:
+        app: jiaa-ai-chat-service
+        service: ai-chat-service
+    spec:
+      containers:
+      - name: ai-chat-service
+        image: jiaa-ai-chat-service:local
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        - name: ENV
+          value: "local"
+        - name: AWS_REGION
+          value: "us-east-1"
+        # AWS 자격 증명은 Secret에서 가져옵니다
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: AWS_SECRET_ACCESS_KEY
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
